@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Listas BuscaPhone — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/css/dashboard.css"/>
+</head>
+<body>
+  <div class="bg-grid"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
+          <rect width="32" height="32" rx="8" fill="#25D366"/>
+          <path d="M16 6C10.477 6 6 10.477 6 16c0 1.89.527 3.656 1.44 5.16L6 26l5.01-1.41A9.944 9.944 0 0016 26c5.523 0 10-4.477 10-10S21.523 6 16 6z" fill="white" opacity="0.9"/>
+          <path d="M20.5 18.5c-.3-.15-1.77-.87-2.04-.97-.28-.1-.48-.15-.68.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.47-.89-.79-1.49-1.76-1.66-2.06-.18-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.68-1.63-.93-2.23-.24-.58-.5-.5-.68-.51h-.58c-.2 0-.52.07-.79.37-.27.3-1.03 1-1.03 2.44 0 1.44 1.05 2.83 1.2 3.03.15.2 2.07 3.16 5.01 4.43.7.3 1.25.48 1.67.61.7.22 1.34.19 1.84.12.56-.08 1.73-.71 1.97-1.39.24-.68.24-1.27.17-1.39-.07-.12-.27-.19-.57-.34z" fill="#25D366"/>
+        </svg>
+      </div>
+      <div>
+        <span class="brand-name">Listas <strong>BuscaPhone</strong></span>
+        <span class="brand-sub">Painel de Controle</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#overview"    class="nav-item active" data-section="overview">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Visão Geral
+      </a>
+      <a href="#messages" class="nav-item" data-section="messages">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Mensagens Processadas
+      </a>
+      <a href="#logs" class="nav-item" data-section="logs">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Logs de API
+      </a>
+      <a href="#groups" class="nav-item" data-section="groups">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Grupos
+      </a>
+      <a href="#webhooks" class="nav-item" data-section="webhooks">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        Webhooks
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar">A</div>
+        <div>
+          <span class="user-name" id="userEmail">admin</span>
+          <span class="user-role">Administrador</span>
+        </div>
+      </div>
+      <a href="/auth/logout" class="btn-logout" title="Sair">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- Header -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <h2 id="section-title">Visão Geral</h2>
+        <span class="live-badge">
+          <span class="dot"></span> Ao vivo
+        </span>
+      </div>
+      <div class="topbar-right">
+        <span id="last-update" class="last-update">—</span>
+        <button class="btn-refresh" onclick="refreshAll()" title="Atualizar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- ═══════════════ OVERVIEW ═══════════════ -->
+    <section id="section-overview" class="section active">
+
+      <!-- Stat Cards -->
+      <div class="cards-grid">
+        <div class="card stat-card">
+          <div class="stat-icon green">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div class="stat-body">
+            <span class="stat-label">Mensagens processadas</span>
+            <span class="stat-value" id="s-total-processed">—</span>
+            <span class="stat-sub" id="s-avg-cost">custo médio: —</span>
+          </div>
+        </div>
+
+        <div class="card stat-card">
+          <div class="stat-icon yellow">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <div class="stat-body">
+            <span class="stat-label">Total gasto (Claude)</span>
+            <span class="stat-value" id="s-total-cost">—</span>
+            <span class="stat-sub">acumulado até hoje</span>
+          </div>
+        </div>
+
+        <div class="card stat-card">
+          <div class="stat-icon blue">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div class="stat-body">
+            <span class="stat-label">Grupos monitorados</span>
+            <span class="stat-value" id="s-groups">—</span>
+            <span class="stat-sub">comunidades ativas</span>
+          </div>
+        </div>
+
+        <div class="card stat-card">
+          <div class="stat-icon purple">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <div class="stat-body">
+            <span class="stat-label">Mensagens hoje</span>
+            <span class="stat-value" id="s-today">—</span>
+            <span class="stat-sub" id="s-errors-today">erros hoje: —</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Últimas chamadas API -->
+      <div class="card table-card">
+        <div class="card-head">
+          <h3>Últimas chamadas de API</h3>
+          <div class="filter-chips">
+            <button class="chip active" data-svc="">Todas</button>
+            <button class="chip" data-svc="zapster">Zapster</button>
+            <button class="chip" data-svc="claude">Claude</button>
+            <button class="chip" data-svc="buscaphone">BuscaPhone</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Serviço</th>
+                <th>Direção</th>
+                <th>Endpoint</th>
+                <th>Status</th>
+                <th>Duração</th>
+                <th>Hora</th>
+              </tr>
+            </thead>
+            <tbody id="logs-table-body">
+              <tr><td colspan="6" class="empty-row">Carregando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-pagination">
+          <button id="logs-prev" onclick="logsPage(-1)" disabled>← Anterior</button>
+          <span id="logs-page-info">—</span>
+          <button id="logs-next" onclick="logsPage(1)">Próxima →</button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ═══════════════ MESSAGES ═══════════════ -->
+    <section id="section-messages" class="section">
+      <div class="card table-card">
+        <div class="card-head">
+          <h3>Textos processados pelo Claude</h3>
+          <span class="badge-count" id="processed-total">0 registros</span>
+        </div>
+        <div id="processed-list" class="processed-list">
+          <div class="empty-row">Carregando...</div>
+        </div>
+        <div class="table-pagination">
+          <button id="proc-prev" onclick="processedPage(-1)" disabled>← Anterior</button>
+          <span id="proc-page-info">—</span>
+          <button id="proc-next" onclick="processedPage(1)">Próxima →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════ LOGS ═══════════════ -->
+    <section id="section-logs" class="section">
+      <div class="card table-card">
+        <div class="card-head">
+          <h3>Todos os logs de API</h3>
+          <div class="filter-chips" id="logs-full-filters">
+            <button class="chip active" data-svc="">Todas</button>
+            <button class="chip" data-svc="zapster">Zapster</button>
+            <button class="chip" data-svc="claude">Claude</button>
+            <button class="chip" data-svc="buscaphone">BuscaPhone</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Serviço</th>
+                <th>Direção</th>
+                <th>Método</th>
+                <th>Endpoint</th>
+                <th>Status</th>
+                <th>Duração</th>
+                <th>Resultado</th>
+                <th>Hora</th>
+              </tr>
+            </thead>
+            <tbody id="full-logs-body">
+              <tr><td colspan="9" class="empty-row">Carregando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-pagination">
+          <button id="fl-prev" onclick="fullLogsPage(-1)" disabled>← Anterior</button>
+          <span id="fl-page-info">—</span>
+          <button id="fl-next" onclick="fullLogsPage(1)">Próxima →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════ GROUPS ═══════════════ -->
+    <section id="section-groups" class="section">
+      <div class="card table-card">
+        <div class="card-head">
+          <h3>Grupos monitorados</h3>
+          <span class="badge-count" id="groups-total">0 grupos</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>ID do Grupo</th>
+                <th>Instância</th>
+                <th>Mensagens</th>
+                <th>Última mensagem</th>
+                <th>Cadastrado em</th>
+              </tr>
+            </thead>
+            <tbody id="groups-body">
+              <tr><td colspan="6" class="empty-row">Carregando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════ WEBHOOKS ═══════════════ -->
+    <section id="section-webhooks" class="section">
+
+      <!-- Config BuscaPhone -->
+      <div class="card settings-card">
+        <div class="card-head">
+          <h3>Configuração — BuscaPhone</h3>
+          <span class="badge badge-info">Destino das listas processadas</span>
+        </div>
+        <div class="settings-body">
+          <div class="settings-row">
+            <label>URL de destino</label>
+            <p class="settings-hint">Endpoint do BuscaPhone que vai receber as listas em JSON após o processamento pelo Claude.</p>
+            <div class="settings-input-row">
+              <input type="url" id="cfg-url" placeholder="https://api.buscaphone.com.br/listas/receber" />
+              <span class="method-badge">POST</span>
+            </div>
+          </div>
+          <div class="settings-row">
+            <label>Token de autenticação <span class="optional">(opcional)</span></label>
+            <p class="settings-hint">Será enviado como <code>Authorization: Bearer &lt;token&gt;</code> no header.</p>
+            <input type="password" id="cfg-token" placeholder="seu-token-aqui" autocomplete="off"/>
+          </div>
+          <div class="settings-row">
+            <label>Envio automático após processamento</label>
+            <p class="settings-hint">Quando ativo, cada lista processada pelo Claude é enviada automaticamente ao BuscaPhone.</p>
+            <label class="toggle-wrap">
+              <input type="checkbox" id="cfg-auto" />
+              <span class="toggle-slider"></span>
+              <span class="toggle-label" id="toggle-label-text">Desativado</span>
+            </label>
+          </div>
+          <div class="settings-actions">
+            <button class="btn-save" onclick="saveSettings()">Salvar configurações</button>
+            <span id="save-msg" class="save-msg hidden">✓ Salvo!</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payload de exemplo -->
+      <div class="card settings-card">
+        <div class="card-head">
+          <h3>Estrutura do payload enviado ao BuscaPhone</h3>
+          <button class="btn-copy" onclick="copyPayloadExample()" style="margin-left:auto">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span>Copiar</span>
+          </button>
+        </div>
+        <pre class="payload-preview" id="payload-example">{
+  "origem": {
+    "sistema":      "listas-buscaphone",
+    "processed_id": 3,
+    "grupo":        "Buscaphone teste",
+    "fornecedor":   "Daniel Fraga",
+    "telefone":     "553193715234",
+    "data_lista":   "2026-04-13T19:19:02.000Z"
+  },
+  "total_produtos": 110,
+  "produtos": [
+    {
+      "produto":           "IPHONE 17 PRO MAX (USA)",
+      "produto_vinculado": "IPHONE 17 PRO MAX (IPH)",
+      "storage":           "512GB",
+      "cor":               "ORANGE",
+      "preco":             9300
+    },
+    {
+      "produto":           "AIRPODS PRO 3",
+      "produto_vinculado": "AIRPODS PRO 3 (ACSS)",
+      "storage":           "NONE",
+      "cor":               "NONE",
+      "preco":             1450
+    }
+  ]
+}</pre>
+      </div>
+
+      <!-- Teste de envio manual -->
+      <div class="card settings-card">
+        <div class="card-head">
+          <h3>Teste — Enviar lista ao BuscaPhone</h3>
+          <span class="badge badge-warn">Manual</span>
+        </div>
+        <div class="settings-body">
+          <div class="settings-row">
+            <label>Selecione uma lista processada para enviar</label>
+            <div class="settings-input-row">
+              <select id="send-select">
+                <option value="">Carregando listas...</option>
+              </select>
+              <button class="btn-send" onclick="sendManual()">Enviar agora →</button>
+            </div>
+            <div id="send-result" class="send-result hidden"></div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Modal de detalhes -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-backdrop" onclick="closeModal()"></div>
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3 id="modal-title">Detalhes</h3>
+        <button onclick="closeModal()" class="modal-close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>
