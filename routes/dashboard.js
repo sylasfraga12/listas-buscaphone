@@ -95,6 +95,33 @@ router.get('/logs/:id/message', requireAuth, (req, res) => {
   res.json(row);
 });
 
+// ── GET /api/logs/:id/supplier ─────────────────────────
+router.get('/logs/:id/supplier', requireAuth, (req, res) => {
+  const entry = db.prepare('SELECT * FROM api_logs WHERE id = ?').get(req.params.id);
+  if (!entry) return res.status(404).json({ error: 'Log não encontrado' });
+
+  let processedId;
+  try { processedId = JSON.parse(entry.request_body)?.processed_id; } catch {}
+  if (!processedId) return res.status(404).json({ error: 'Este log não tem processed_id associado' });
+
+  const row = db.prepare(`
+    SELECT
+      m.sender_name, m.sender_phone, m.group_name, m.group_type,
+      m.sent_at, m.received_at,
+      pm.id           AS processed_id,
+      pm.processed_at,
+      pm.input_tokens, pm.output_tokens, pm.cost_usd,
+      pm.sent_to_buscaphone, pm.buscaphone_status, pm.buscaphone_response,
+      pm.processed_text
+    FROM processed_messages pm
+    LEFT JOIN messages m ON m.id = pm.message_id
+    WHERE pm.id = ?
+  `).get(processedId);
+
+  if (!row) return res.status(404).json({ error: 'Fornecedor não encontrado' });
+  res.json(row);
+});
+
 // ── GET /api/processed ─────────────────────────────────
 router.get('/processed', requireAuth, (req, res) => {
   const limit  = Math.min(parseInt(req.query.limit)  || 20, 100);

@@ -130,6 +130,8 @@ async function loadLogs() {
           <td style="white-space:nowrap">${fmtDate(l.created_at)}</td>
           <td>${l.service === 'zapster' && l.direction === 'inbound'
             ? `<button class="btn-view-msg" onclick="event.stopPropagation(); openMessageFromLog(${l.id})" title="Ver mensagem">💬 Ver msg</button>`
+            : l.service === 'buscaphone' && l.direction === 'outbound'
+            ? `<button class="btn-view-supplier" onclick="event.stopPropagation(); openSupplierFromLog(${l.id})" title="Ver fornecedor">📦 Fornecedor</button>`
             : ''}</td>
         </tr>
       `).join('');
@@ -177,6 +179,8 @@ async function loadFullLogs() {
           <td style="white-space:nowrap">${fmtDate(l.created_at)}</td>
           <td>${l.service === 'zapster' && l.direction === 'inbound'
             ? `<button class="btn-view-msg" onclick="event.stopPropagation(); openMessageFromLog(${l.id})" title="Ver mensagem">💬 Ver msg</button>`
+            : l.service === 'buscaphone' && l.direction === 'outbound'
+            ? `<button class="btn-view-supplier" onclick="event.stopPropagation(); openSupplierFromLog(${l.id})" title="Ver fornecedor">📦 Fornecedor</button>`
             : ''}</td>
         </tr>
       `).join('');
@@ -241,6 +245,68 @@ async function openLog(id) {
 
 function closeModal() {
   document.getElementById('modal').classList.add('hidden');
+}
+
+// ── Ver fornecedor a partir de um log BuscaPhone ───────────────────────────
+async function openSupplierFromLog(logId) {
+  try {
+    const r = await fetch(`/api/logs/${logId}/supplier`);
+    if (!r.ok) { const e = await r.json(); alert(e.error || 'Fornecedor não encontrado'); return; }
+    const s = await r.json();
+
+    const bpStatus = s.buscaphone_status;
+    const bpResp   = (() => { try { return JSON.stringify(JSON.parse(s.buscaphone_response), null, 2); } catch { return s.buscaphone_response || '—'; } })();
+    const prodCount = s.processed_text
+      ? s.processed_text.trim().split('\n').filter(l => l.includes('|')).length - 1
+      : 0;
+
+    document.getElementById('modal-title').textContent = `Fornecedor — ${escHtml(s.sender_name || '—')}`;
+    document.getElementById('modal-body').innerHTML = `
+      <div class="modal-section">
+        <span class="modal-section-label">Fornecedor</span>
+        <div style="font-size:16px;font-weight:600">${escHtml(s.sender_name || '—')}</div>
+      </div>
+      <div class="modal-section">
+        <span class="modal-section-label">Telefone</span>
+        <div class="mono">${escHtml(s.sender_phone || '—')}</div>
+      </div>
+      <div class="modal-section">
+        <span class="modal-section-label">Grupo</span>
+        <div>${escHtml(s.group_name || '—')} <span class="mono" style="color:var(--text-muted);font-size:11px">(${escHtml(s.group_type || '—')})</span></div>
+      </div>
+      <div class="modal-section">
+        <span class="modal-section-label">Data da lista</span>
+        <div class="mono">${fmtDate(s.sent_at)}</div>
+      </div>
+      <div class="modal-section">
+        <span class="modal-section-label">Processado em</span>
+        <div class="mono">${fmtDate(s.processed_at)}</div>
+      </div>
+      <div class="modal-section">
+        <span class="modal-section-label">Produtos extraídos</span>
+        <div><span class="badge badge-info">${prodCount} produto${prodCount !== 1 ? 's' : ''}</span></div>
+      </div>
+      <div class="modal-section">
+        <span class="modal-section-label">Custo Claude</span>
+        <div class="mono">$${fmt(s.cost_usd, 6)} &nbsp;·&nbsp; ${s.input_tokens || 0}in + ${s.output_tokens || 0}out tokens</div>
+      </div>
+      <div class="modal-section">
+        <span class="modal-section-label">Envio ao BuscaPhone</span>
+        <div>
+          ${s.sent_to_buscaphone ? '<span class="badge badge-ok">Enviado</span>' : '<span class="badge badge-warn">Não enviado</span>'}
+          ${bpStatus ? `&nbsp; <span class="mono" style="color:var(--text-muted)">HTTP ${bpStatus}</span>` : ''}
+        </div>
+      </div>
+      ${bpResp && bpResp !== '—' ? `
+      <div class="modal-section">
+        <span class="modal-section-label">Resposta BuscaPhone</span>
+        <div class="modal-code">${escHtml(bpResp)}</div>
+      </div>` : ''}
+    `;
+    document.getElementById('modal').classList.remove('hidden');
+  } catch (e) {
+    console.error('openSupplierFromLog:', e);
+  }
 }
 
 // ── Ver mensagem completa a partir de um log ────────────────────────────────
