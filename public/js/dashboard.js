@@ -128,6 +128,9 @@ async function loadLogs() {
           <td>${statusBadge(l.status_code, l.success)}</td>
           <td class="mono">${fmtDuration(l.duration_ms)}</td>
           <td style="white-space:nowrap">${fmtDate(l.created_at)}</td>
+          <td>${l.service === 'zapster' && l.direction === 'inbound'
+            ? `<button class="btn-view-msg" onclick="event.stopPropagation(); openMessageFromLog(${l.id})" title="Ver mensagem">💬 Ver msg</button>`
+            : ''}</td>
         </tr>
       `).join('');
     }
@@ -172,6 +175,9 @@ async function loadFullLogs() {
           <td class="mono">${fmtDuration(l.duration_ms)}</td>
           <td>${l.success ? '<span class="badge badge-ok">OK</span>' : `<span class="badge badge-error">${escHtml(truncate(l.error_msg, 30))}</span>`}</td>
           <td style="white-space:nowrap">${fmtDate(l.created_at)}</td>
+          <td>${l.service === 'zapster' && l.direction === 'inbound'
+            ? `<button class="btn-view-msg" onclick="event.stopPropagation(); openMessageFromLog(${l.id})" title="Ver mensagem">💬 Ver msg</button>`
+            : ''}</td>
         </tr>
       `).join('');
     }
@@ -235,6 +241,51 @@ async function openLog(id) {
 
 function closeModal() {
   document.getElementById('modal').classList.add('hidden');
+}
+
+// ── Ver mensagem completa a partir de um log ────────────────────────────────
+async function openMessageFromLog(logId) {
+  try {
+    const r = await fetch(`/api/logs/${logId}/message`);
+    if (!r.ok) {
+      const e = await r.json();
+      alert(e.error || 'Mensagem não encontrada');
+      return;
+    }
+    const m = await r.json();
+
+    document.getElementById('modal-title').textContent = `Mensagem — ${escHtml(m.group_name || '—')} | ${escHtml(m.sender_name || '—')}`;
+    document.getElementById('modal-body').innerHTML = `
+      <div class="modal-section">
+        <span class="modal-section-label">Remetente</span>
+        <div>${escHtml(m.sender_name || '—')} &nbsp;<span class="mono" style="color:var(--text-muted)">${escHtml(m.sender_phone || '')}</span></div>
+      </div>
+      <div class="modal-section">
+        <span class="modal-section-label">Grupo</span>
+        <div>${escHtml(m.group_name || '—')}</div>
+      </div>
+      <div class="modal-section">
+        <span class="modal-section-label">Enviado em</span>
+        <div class="mono">${fmtDate(m.sent_at)}</div>
+      </div>
+      <div class="modal-section">
+        <span class="modal-section-label">Mensagem original (WhatsApp)</span>
+        <div class="modal-code" style="max-height:220px;overflow-y:auto;white-space:pre-wrap">${escHtml(m.content || '—')}</div>
+      </div>
+      ${m.error
+        ? `<div class="modal-section"><span class="modal-section-label">Erro no processamento</span><div class="modal-code" style="color:var(--red)">${escHtml(m.error)}</div></div>`
+        : m.processed_text
+          ? `<div class="modal-section">
+              <span class="modal-section-label">Resultado do Claude &nbsp;<span style="color:var(--text-muted);font-weight:400">${m.input_tokens || 0}in + ${m.output_tokens || 0}out tokens &nbsp; $${fmt(m.cost_usd, 6)}</span></span>
+              <div style="overflow-x:auto">${renderPipeTable(m.processed_text)}</div>
+             </div>`
+          : `<div class="modal-section"><span class="modal-section-label">Processamento</span><div style="color:var(--text-muted)">Ainda não processado</div></div>`
+      }
+    `;
+    document.getElementById('modal').classList.remove('hidden');
+  } catch (e) {
+    console.error('openMessageFromLog:', e);
+  }
 }
 
 // ── Processed Messages ─────────────────────────────────────────────────────

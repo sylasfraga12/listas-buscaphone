@@ -270,6 +270,15 @@ tbody tr:hover td { background: rgba(255,255,255,.02); }
 .btn-copy:hover { background: rgba(37,211,102,.18); border-color: var(--green); }
 .btn-copy.copied { background: rgba(37,211,102,.2); color: var(--green); }
 
+.btn-view-msg {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 500;
+  cursor: pointer; border: 1px solid rgba(99,179,237,.3);
+  background: rgba(99,179,237,.08); color: #63b3ed;
+  transition: all .15s; font-family: inherit; white-space: nowrap;
+}
+.btn-view-msg:hover { background: rgba(99,179,237,.18); border-color: #63b3ed; }
+
 .proc-raw-text { display: none; }
 
 /* Texto original (coluna esquerda) */

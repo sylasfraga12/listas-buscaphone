@@ -73,6 +73,28 @@ router.get('/logs/:id', requireAuth, (req, res) => {
   res.json(entry);
 });
 
+// ── GET /api/logs/:id/message ──────────────────────────
+router.get('/logs/:id/message', requireAuth, (req, res) => {
+  const entry = db.prepare('SELECT * FROM api_logs WHERE id = ?').get(req.params.id);
+  if (!entry) return res.status(404).json({ error: 'Log não encontrado' });
+
+  let eventId;
+  try { eventId = JSON.parse(entry.request_body)?.event_id; } catch {}
+  if (!eventId) return res.status(404).json({ error: 'Este log não tem event_id associado' });
+
+  const row = db.prepare(`
+    SELECT m.content, m.sender_name, m.sender_phone, m.group_name, m.sent_at,
+           pm.processed_text, pm.input_tokens, pm.output_tokens, pm.cost_usd, pm.error
+    FROM messages m
+    LEFT JOIN processed_messages pm ON pm.message_id = m.id
+    WHERE m.event_id = ?
+    ORDER BY pm.id DESC LIMIT 1
+  `).get(eventId);
+
+  if (!row) return res.status(404).json({ error: 'Mensagem não encontrada no banco' });
+  res.json(row);
+});
+
 // ── GET /api/processed ─────────────────────────────────
 router.get('/processed', requireAuth, (req, res) => {
   const limit  = Math.min(parseInt(req.query.limit)  || 20, 100);
